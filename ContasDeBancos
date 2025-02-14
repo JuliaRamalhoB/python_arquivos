@@ -1,18 +1,35 @@
 import json
+from time import sleep
+def azul(mns):
+    return (f'\033[34m{mns}\033[m')
+
+
+def vermelho(mnsg):
+    return f'\033[31m{mnsg}\033[m'
+
+
 
 while True:
     nova_transação = dict()
     print('Escolha suas opções:\n1-Depósito\n2-Saque\n3-Ver saldo e transações\n4-Sair')
-    while True:
+    try:
         r = int(input('>>>'))
         if r not in [1,2,3,4]:
-            print('Você digitou algo errado, as opções são 1,2,3 e 4! Tente novamente!')
+            print(vermelho('Você digitou algo errado, as opções são 1,2,3 e 4! Tente novamente!'))
+            sleep(1)
             continue
+    except ValueError:
+        print(vermelho('Você digitou algo errado, as opções são 1,2,3 e 4! Tente novamente!'))
+        sleep(1)
+        continue
+
+    if r == 4:
+        print(azul('O programa está sendo encerrado. Volte sempre!'))
         break
     while True:
         user = str(input('Digite seu User:'))
         if user.isalpha() is False:
-            print('Você digitou algo errado, tente novamente, só users alfabéticos são aceitos')
+            print(vermelho('Você digitou algo errado, tente novamente, só users alfabéticos são aceitos'))
             continue
         break
     try:
@@ -21,11 +38,11 @@ while True:
     except (FileNotFoundError, json.JSONDecodeError):
         users = {}
     if user not in users:
-        print('Ainda não existia esse user no arquivo, iniciamos uma conta')
-        users[user] = {"saldo": 0, "transações": []} 
+        print(azul('Ainda não existia esse user no arquivo, iniciamos uma conta'))
+        users[user] = {"saldo": 0, "transações": []} #criando um usuario sendo um dicionario com outro dicionario
     if r == 1:
         depósito = float(input('Faça o seu depósito:'))
-        nova_transação = {'tipo': 'depósito','valor': depósito} 
+        nova_transação = {'tipo': 'depósito','valor': depósito} #isso é um dicionario para ser adicionado dps na lista
         users[user]['saldo'] += depósito
         users[user]['transações'].append(nova_transação)
     if r == 2:
@@ -35,10 +52,11 @@ while True:
         users[user]['transações'].append(nova_transação)
     if r == 3:
         print(f'O saldo da sua conta é {users[user]["saldo"]}')
+        sleep(1)
         print(f'As transações feitas foram:')
         for transacao in users[user]["transações"]:
             print(f"- {transacao['tipo'].capitalize()} de R$ {transacao['valor']:.2f}")
-    if r == 4:
-        break
+            sleep(2)
+
     with open('contas.json', 'w') as contas:
         json.dump(users, contas, indent=4)
